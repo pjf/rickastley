@@ -129,7 +129,13 @@ def original():
     if selection is None:
         return str(play_tune(_original))
 
-    selection = int(selection)
+    # With a selection try to turn into an index we can use.
+    # There may be a '#' or '*', so we'll default to '0'
+    # (our menu) if we fail to parse as an int
+    try:
+        selection = int(selection)
+    except ValueError:
+        selection = 0
 
     # Zero is always our menu.
     if selection == 0:

@@ -120,10 +120,10 @@ def play_menu():
 
     return response
 
-@app.route("/")
+@app.route("/", methods = ['GET','POST'])
 def original():
 
-    selection = request.args.get('Digits')
+    selection = request.values.get('Digits')
 
     # Without a selection, play the original
     if selection is None:

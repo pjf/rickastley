@@ -123,19 +123,26 @@ def play_menu():
 @app.route("/")
 def original():
 
-    selection = int(request.args.get('Digits'))
+    selection = request.args.get('Digits')
 
+    # Without a selection, play the original
     if selection is None:
         return str(play_tune(_original))
-    elif selection == 0:
+
+    selection = int(selection)
+
+    # Zero is always our menu.
+    if selection == 0:
         return str(play_menu())
-    else:
-        tune = _original
 
-        try: tune = tunes[selection]
-        except Exception: pass
+    # Otherwise load the song they want, with a default of the original
+    # song if they select something outsie our array bounds.
+    tune = _original
 
-        return str(play_tune(tune))
+    try: tune = tunes[selection]
+    except Exception: pass
+
+    return str(play_tune(tune))
 
 if __name__ == "__main__":
     app.run()

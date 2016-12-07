@@ -7,7 +7,7 @@ You're welcome, Internet.
 - UK: +44-11-7325-7425
 - USA: +1-760-706-7425
 
-Want me to continue bringing whimsy to the world? [Support me on Patreon](patreon.com/_pjf).
+Want me to continue bringing whimsy to the world? [Support me on Patreon](https://www.patreon.com/_pjf).
 
 You can also [become a fan on Facebook](https://www.facebook.com/full.commitment).
 

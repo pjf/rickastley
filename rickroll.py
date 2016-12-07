@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
@@ -8,6 +8,9 @@ _original = {
     'by': "Rick Astley",
     'url': "https://dl.dropboxusercontent.com/u/9702672/music/01-NeverGonnaGiveYouUp.mp3"
 }
+
+# Played on timeout
+goodbye = "Thank you for calling the National Rick Astley Hotline. Goodbye."
 
 tunes = [
     None,   # Zero is always the menu
@@ -84,17 +87,55 @@ for idx, song in enumerate(tunes):
 menu += "To hear these options again, press zero.\n"
 menu += "If you do not wish to be rick-rolled, please hang up now."
 
-@app.route("/")
-def original():
+def play_tune(tune):
+    """Takes a tune dictionary, returns a TwiML response that plays it."""
+
+    # If somehow we're called with no argument, which could happen if we had
+    # a short menu or multi-key input.
+    if tune is None:
+        return play_menu()
+
+    response = twiml.Response()
+
+    # By calling functions on gather, digits can be pressed during the song
+    # playback *and* the menu afterwards.
+    gather = response.gather(numDigits=1, timeout=10)
+    gather.play(tune['url'])
+    gather.say(menu)
+    
+    # Our goodbye triggers after gather times out.
+    response.say(goodbye)
+
+    return response
+
+def play_menu():
+    """Plays the menu"""
+
     response = twiml.Response()
 
     gather = response.gather(numDigits=1, timeout=10)
-    gather.play(_original['url'])
+    gather.say(menu)
 
-    response.say(menu)
+    response.say(goodbye)
 
-    return str(response)
+    return response
 
+@app.route("/")
+def original():
+
+    selection = int(request.args.get('Digits'))
+
+    if selection is None:
+        return str(play_tune(_original))
+    elif selection == 0:
+        return str(play_menu())
+    else:
+        tune = _original
+
+        try: tune = tunes[selection]
+        except Exception: pass
+
+        return str(play_tune(tune))
 
 if __name__ == "__main__":
     app.run()

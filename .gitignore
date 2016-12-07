@@ -1,2 +1,3 @@
 venv/
 *.swp
+zappa_settings.json

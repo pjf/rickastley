@@ -1,6 +1,0 @@
-{
-    "production": {
-        "app_function": "rickroll.app", 
-        "s3_bucket": "zappa-rickroll-private"
-    }
-}

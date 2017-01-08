@@ -24,7 +24,7 @@ The National Rick Astley Hotline brings joy to thousands of people each year. It
 First, set up your virtual environment and install the requirements:
 
     $ virtualenv venv
-    $ . venv/env/activate
+    $ . venv/bin/activate
     $ pip install -r requirements.txt
 
 To run, simply:
@@ -46,7 +46,7 @@ server. The [Zappa documentation](https://github.com/Miserlou/Zappa#zappa---serv
 provides detailed set-up instructions, but if you have your `~/.aws/credentials` file in order,
 it should be as simple as:
 
-    $ . venv/env/activate
+    $ . venv/bin/activate
     $ zappa init
     $ zappa deploy
 

@@ -3,10 +3,13 @@ app = Flask(__name__)
 
 from twilio import twiml
 
+# Where we're storing all our audio files.
+url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"
+
 _original = {
     'description': "The Original",
     'by': "Rick Astley",
-    'url': "https://dl.dropboxusercontent.com/u/9702672/music/01-NeverGonnaGiveYouUp.mp3"
+    'url': url_base + "01-NeverGonnaGiveYouUp.mp3"
 }
 
 # Played on timeout
@@ -18,49 +21,49 @@ tunes = [
         'src': "https://www.youtube.com/watch?v=b1WWpKEPdT4",
         'description': "Eight bit",
         'by': "Kita Khyber",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/8-Bit%20Rick%20Roll.mp3",
+        'url': url_base + "8-Bit%20Rick%20Roll.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=q-9KqwCFDJs",
         'description': "Dubstep",
         'by': "Crystalize",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick-Astley-Dubstep.mp3",
+        'url': url_base + "Rick-Astley-Dubstep.mp3",
     },
     {
         # Not sure who this is by
         'src': "https://vimeo.com/64322245",
         'description': "Daft Punk",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick%20Roll%20Never%20Gonna%20Give%20You%20Up%20%28Daft%20Punk%20remix%29.mp3",
+        'url': url_base + "Rick%20Roll%20Never%20Gonna%20Give%20You%20Up%20%28Daft%20Punk%20remix%29.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=oT3mCybbhf0",
         'description': "Uh-vee-chee",  # Avicii, but Twilio gets confused by that.
         'by': "Nils",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/AVICII%20and%20RICK%20ASTLEY%20-%20Never%20Gonna%20Wake%20Up%20%28Mashup-Remix%29.mp3",
+        'url': url_base + "AVICII%20and%20RICK%20ASTLEY%20-%20Never%20Gonna%20Wake%20Up%20%28Mashup-Remix%29.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=Eupg7rZ9AUY",
         'description': "Drum and bass",
         'by': "Wave-shapers",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28WAV35HAPERS%20Remix%29.mp3",
+        'url': url_base + "Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28WAV35HAPERS%20Remix%29.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=KykFbfCMizo",
         'description': "E.D.M.",
         'by': "Riot", # R!OT
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28R%21OT%20Remix%29.mp3",
+        'url': url_base + "Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28R%21OT%20Remix%29.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=GL-8XuoxuaQ",
         'description': "Metal",
         'by': "Andy Rehfeldt",
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick%20Astley-Never%20Gonna%20Give%20You%20Up%28Metal%20Version%29.mp3",
+        'url': url_base + "Rick%20Astley-Never%20Gonna%20Give%20You%20Up%28Metal%20Version%29.mp3",
     },
     {
         'src': "https://www.youtube.com/watch?v=snC4ZtW9dHI",
         'description': "Nirvana",
         'by': "i. v. lad e. o", # ivladeo
-        'url': "https://dl.dropboxusercontent.com/u/9702672/music/Rick%20Astley%20%20%20Nirvana%20Mashup%20%20%20Never%20gonna%20give%20your%20teen%20spirit%20up.mp3",
+        'url': url_base + "Rick%20Astley%20%20%20Nirvana%20Mashup%20%20%20Never%20gonna%20give%20your%20teen%20spirit%20up.mp3",
     },
     _original
 ]

@@ -2,6 +2,8 @@ from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
+from raven.contrib.flask import Sentry
+sentry = Sentry(app)
 
 # Where we're storing all our audio files.
 url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"

@@ -2,15 +2,17 @@ Flask==0.11.1
 Jinja2==2.8
 MarkupSafe==0.23
 PyYAML==3.12
-Unidecode==0.04.19
+Unidecode==0.4.19
 Werkzeug==0.11.11
 argparse==1.2.1
 base58==0.2.4
+blinker==1.4
 boto3==1.4.1
 botocore==1.4.80
 certifi==2016.9.26
 cffi==1.9.1
 click==6.6
+contextlib2==0.5.5
 cryptography==1.5.3
 docutils==0.12
 enum34==1.1.6
@@ -30,6 +32,7 @@ pycparser==2.17
 python-dateutil==2.6.0
 python-slugify==1.2.1
 pytz==2016.7
+raven==6.1.0
 requests==2.12.3
 s3transfer==0.1.9
 six==1.10.0

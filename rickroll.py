@@ -2,9 +2,13 @@ from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
+import boto3
+import os
 from raven.contrib.flask import Sentry
 sentry = Sentry(app)
 
+s3 = boto3.resource('s3')
+bucket = s3.Bucket(os.environ['data_bucket'])
 # Where we're storing all our audio files.
 url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"
 
@@ -154,6 +158,15 @@ def original():
     except Exception: pass
 
     return str(play_tune(tune))
+
+@app.route("/sms", methods=["POST"])
+def sms():
+    from_number = request.form.get('From')
+    bucket.put_object(
+        Key='queue/{}'.format(from_number),
+        Body='',
+    )
+    return "Hello world!"
 
 if __name__ == "__main__":
     app.run()

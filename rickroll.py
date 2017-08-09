@@ -2,6 +2,8 @@ from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
+from twilio.rest import TwilioRestClient
+
 import boto3
 import os
 from raven.contrib.flask import Sentry
@@ -9,6 +11,9 @@ sentry = Sentry(app)
 
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['data_bucket'])
+twilio_client = TwilioRestClient(os.environ['twilio_sid'],
+                                 os.environ['twilio_token'])
+
 # Where we're storing all our audio files.
 url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"
 
@@ -167,6 +172,16 @@ def sms():
         Body='',
     )
     return "Hello world!"
+
+def send_sms():
+    for queue_entry in bucket.objects.filter(Prefix='queue/'):
+        number = queue_entry.key[6:]
+        twilio_client.messages.create(
+            to=number,
+            from_="+61476856860",
+            body="We're no strangers to love.",
+        )
+        queue_entry.delete()
 
 if __name__ == "__main__":
     app.run()

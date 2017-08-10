@@ -5,7 +5,9 @@ from twilio import twiml
 from twilio.rest import TwilioRestClient
 
 import boto3
+import botocore
 import os
+from datetime import datetime, timedelta
 from raven.contrib.flask import Sentry
 sentry = Sentry(app)
 
@@ -77,6 +79,14 @@ tunes = [
         'url': url_base + "Rick%20Astley%20%20%20Nirvana%20Mashup%20%20%20Never%20gonna%20give%20your%20teen%20spirit%20up.mp3",
     },
     _original
+]
+
+messages = [
+    "We're no strangers to love.",
+    "You know the rules, and so do I.",
+    "A full commitment's what I'm thinking of.",
+    "You wouldn't get this from any other guy.",
+    "Call me?",
 ]
 
 # Menu generation. I'd love to put this in its own function to be clean and
@@ -176,11 +186,39 @@ def sms():
 def send_sms():
     for queue_entry in bucket.objects.filter(Prefix='queue/'):
         number = queue_entry.key[6:]
-        twilio_client.messages.create(
-            to=number,
-            from_="+61476856860",
-            body="We're no strangers to love.",
+
+        # Find out which message we sent last, if any
+        # Error handling taken from https://stackoverflow.com/a/33843019
+        try:
+            state_obj = s3.Object(
+                os.environ['data_bucket'],
+                'state/{}'.format(number),
+            )
+            state_obj.load()
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                last_msg = -1
+            else:
+                raise 
+        else:
+            last_msg = int(state_obj.get()['Body'].read().decode('utf8'))
+
+        # Send the next one
+        next_msg = last_msg + 1
+        if next_msg < len(messages):
+            twilio_client.messages.create(
+                to=number,
+                from_="+61476856860",
+                body=messages[next_msg],
+            )
+
+        # Record which message we just sent in S3
+        bucket.put_object(
+            Key='state/{}'.format(number),
+            Body=str(next_msg),
+            Expires=datetime.now() + timedelta(days=7),
         )
+        
         queue_entry.delete()
 
 if __name__ == "__main__":

@@ -1,0 +1,24 @@
+{
+    "dev": {
+        "app_function": "rickroll.app",
+        // Put a random S3 bucket name that doesn't already exist here. Zappa
+        // will create it and put your Lambda code in it when you run
+        // 'zappa init'.
+        "s3_bucket": "insert-bucket-name-here",
+        "aws_region": "us-east-1",
+        "environment_variables": {
+            // This should be a bucket WITHOUT public read access. Phone numbers
+            // will get stored in here.
+            "data_bucket": "rick-astley-data",
+            // These should be set to an IAM user with access to your S3 bucket
+            "aws_access_key_id": "INSERT_ACCESS_KEY_HERE",
+            "aws_secret_access_key": "insert-secret-access-key-here",
+            "twilio_sid": "insert-twilio-sid-here",
+            "twilio_token": "insert-twilio-token-here"
+        },
+        "events": [{
+           "function": "rickroll.send_sms",
+           "expression": "rate(4 minutes)"
+       }]
+    }
+}

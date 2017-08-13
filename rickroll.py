@@ -2,6 +2,19 @@ from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
+from twilio.rest import TwilioRestClient
+
+import boto3
+import botocore
+import os
+from datetime import datetime, timedelta
+from raven.contrib.flask import Sentry
+sentry = Sentry(app)
+
+s3 = boto3.resource('s3')
+bucket = s3.Bucket(os.environ['data_bucket'])
+twilio_client = TwilioRestClient(os.environ['twilio_sid'],
+                                 os.environ['twilio_token'])
 
 # Where we're storing all our audio files.
 url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"
@@ -68,6 +81,14 @@ tunes = [
     _original
 ]
 
+messages = [
+    "We're no strangers to love.",
+    "You know the rules, and so do I.",
+    "A full commitment's what I'm thinking of.",
+    "You wouldn't get this from any other guy.",
+    "Call me?",
+]
+
 # Menu generation. I'd love to put this in its own function to be clean and
 # tidy, but if I put that at the end Python gets grumpy and I'm not sure how to
 # forward-declare. I could put it into a separate file and include that, but
@@ -105,7 +126,7 @@ def play_tune(tune):
     gather = response.gather(numDigits=1, timeout=10)
     gather.play(tune['url'])
     gather.say(menu)
-    
+
     # Our goodbye triggers after gather times out.
     response.say(goodbye)
 
@@ -152,6 +173,56 @@ def original():
     except Exception: pass
 
     return str(play_tune(tune))
+
+@app.route("/sms", methods=["POST"])
+def sms():
+    """Adds an incoming SMS to a queue, to reply to later."""
+    bucket.put_object(
+        Key='queue/{to}/{from_}'.format(to=request.form['To'],
+                                        from_=request.form['From']),
+        Body='',
+    )
+    return "Hello world!"
+
+def send_sms():
+    """Empties the queue of incoming SMSes, replying to each one."""
+    for queue_entry in bucket.objects.filter(Prefix='queue/'):
+        _, our_number, their_number = queue_entry.key.split("/")
+        state_key = "state/{}/{}".format(our_number, their_number)
+
+        # Find out which message we sent last, if any
+        # Error handling taken from https://stackoverflow.com/a/33843019
+        try:
+            state_obj = s3.Object(
+                os.environ['data_bucket'],
+                state_key,
+            )
+            state_obj.load()
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                last_msg = -1
+            else:
+                raise
+        else:
+            last_msg = int(state_obj.get()['Body'].read().decode('utf8'))
+
+        # Send the next one
+        next_msg = last_msg + 1
+        if next_msg < len(messages):
+            twilio_client.messages.create(
+                to=their_number,
+                from_=our_number,
+                body=messages[next_msg],
+            )
+
+        # Record which message we just sent in S3
+        bucket.put_object(
+            Key=state_key,
+            Body=str(next_msg),
+            Expires=datetime.now() + timedelta(days=7),
+        )
+
+        queue_entry.delete()
 
 if __name__ == "__main__":
     app.run()

@@ -126,7 +126,7 @@ def play_tune(tune):
     gather = response.gather(numDigits=1, timeout=10)
     gather.play(tune['url'])
     gather.say(menu)
-    
+
     # Our goodbye triggers after gather times out.
     response.say(goodbye)
 
@@ -176,30 +176,33 @@ def original():
 
 @app.route("/sms", methods=["POST"])
 def sms():
-    from_number = request.form.get('From')
+    """Adds an incoming SMS to a queue, to reply to later."""
     bucket.put_object(
-        Key='queue/{}'.format(from_number),
+        Key='queue/{to}/{from_}'.format(to=request.form['To'],
+                                        from_=request.form['From']),
         Body='',
     )
     return "Hello world!"
 
 def send_sms():
+    """Empties the queue of incoming SMSes, replying to each one."""
     for queue_entry in bucket.objects.filter(Prefix='queue/'):
-        number = queue_entry.key[6:]
+        _, our_number, their_number = queue_entry.key.split("/")
+        state_key = "state/{}/{}".format(our_number, their_number)
 
         # Find out which message we sent last, if any
         # Error handling taken from https://stackoverflow.com/a/33843019
         try:
             state_obj = s3.Object(
                 os.environ['data_bucket'],
-                'state/{}'.format(number),
+                state_key,
             )
             state_obj.load()
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
                 last_msg = -1
             else:
-                raise 
+                raise
         else:
             last_msg = int(state_obj.get()['Body'].read().decode('utf8'))
 
@@ -207,18 +210,18 @@ def send_sms():
         next_msg = last_msg + 1
         if next_msg < len(messages):
             twilio_client.messages.create(
-                to=number,
-                from_="+61476856860",
+                to=their_number,
+                from_=our_number,
                 body=messages[next_msg],
             )
 
         # Record which message we just sent in S3
         bucket.put_object(
-            Key='state/{}'.format(number),
+            Key=state_key,
             Body=str(next_msg),
             Expires=datetime.now() + timedelta(days=7),
         )
-        
+
         queue_entry.delete()
 
 if __name__ == "__main__":

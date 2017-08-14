@@ -68,28 +68,6 @@ tunes = [
     _original
 ]
 
-# Menu generation. I'd love to put this in its own function to be clean and
-# tidy, but if I put that at the end Python gets grumpy and I'm not sure how to
-# forward-declare. I could put it into a separate file and include that, but
-# then I have to learn how file inclusion works. ;)
-
-menu = "Welcome to the national Rick Astley hotline. You may make your selection at any time.\n"
-
-for idx, song in enumerate(tunes):
-
-    if song is None:
-        continue
-
-    menu += "To listen to {}".format(song['description'])
-
-    if 'by' in song:
-        menu += " by {}".format(song['by'])
-
-    menu += ", press {}.\n".format(idx)
-
-menu += "To hear these options again, press zero.\n"
-menu += "If you do not wish to be rick-rolled, please hang up now."
-
 def play_tune(tune):
     """Takes a tune dictionary, returns a TwiML response that plays it."""
 
@@ -104,7 +82,7 @@ def play_tune(tune):
     # playback *and* the menu afterwards.
     gather = response.gather(numDigits=1, timeout=10)
     gather.play(tune['url'])
-    gather.say(menu)
+    gather.say(generate_menu())
     
     # Our goodbye triggers after gather times out.
     response.say(goodbye)
@@ -117,7 +95,7 @@ def play_menu():
     response = twiml.Response()
 
     gather = response.gather(numDigits=1, timeout=10)
-    gather.say(menu)
+    gather.say(generate_menu())
 
     response.say(goodbye)
 
@@ -152,6 +130,26 @@ def original():
     except Exception: pass
 
     return str(play_tune(tune))
+
+def generate_menu():
+    menu = "Welcome to the national Rick Astley hotline. You may make your selection at any time.\n"
+
+    for idx, song in enumerate(tunes):
+
+        if song is None:
+            continue
+
+        menu += "To listen to {}".format(song['description'])
+
+        if 'by' in song:
+            menu += " by {}".format(song['by'])
+
+        menu += ", press {}.\n".format(idx)
+
+    menu += "To hear these options again, press zero.\n"
+    menu += "If you do not wish to be rick-rolled again, please hang up now."
+
+    return menu
 
 if __name__ == "__main__":
     app.run()

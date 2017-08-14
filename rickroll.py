@@ -123,11 +123,11 @@ def original():
         return str(play_menu())
 
     # Otherwise load the song they want, with a default of the original
-    # song if they select something outsie our array bounds.
-    tune = _original
-
-    try: tune = tunes[selection]
-    except Exception: pass
+    # song if they select something outside our array bounds.
+    try:
+        tune = tunes[selection]
+    except IndexError:
+        tune = _original
 
     return str(play_tune(tune))
 

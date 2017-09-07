@@ -2,71 +2,18 @@ from flask import Flask, request
 app = Flask(__name__)
 
 from twilio import twiml
+from six.moves.urllib.parse import quote
+import yaml
 
-# Where we're storing all our audio files.
-url_base = "https://s3-us-west-2.amazonaws.com/true-commitment/"
+with open('songs.yaml') as f:
+    yaml_content = yaml.safe_load(f.read())
 
-_original = {
-    'description': "The Original",
-    'by': "Rick Astley",
-    'url': url_base + "01-NeverGonnaGiveYouUp.mp3"
-}
+tunes = [yaml_content[song] for song in yaml_content['remixes']]
+tunes.insert(0, None)  # Zero is always the menu.
+tunes.append(yaml_content['original'])  # Make sure we add in the original.
 
 # Played on timeout
 goodbye = "Thank you for calling the National Rick Astley Hotline. Goodbye."
-
-tunes = [
-    None,   # Zero is always the menu
-    {
-        'src': "https://www.youtube.com/watch?v=b1WWpKEPdT4",
-        'description': "Eight bit",
-        'by': "Kita Khyber",
-        'url': url_base + "8-Bit%20Rick%20Roll.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=q-9KqwCFDJs",
-        'description': "Dubstep",
-        'by': "Crystalize",
-        'url': url_base + "Rick-Astley-Dubstep.mp3",
-    },
-    {
-        # Not sure who this is by
-        'src': "https://vimeo.com/64322245",
-        'description': "Daft Punk",
-        'url': url_base + "Rick%20Roll%20Never%20Gonna%20Give%20You%20Up%20%28Daft%20Punk%20remix%29.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=oT3mCybbhf0",
-        'description': "Uh-vee-chee",  # Avicii, but Twilio gets confused by that.
-        'by': "Nils",
-        'url': url_base + "AVICII%20and%20RICK%20ASTLEY%20-%20Never%20Gonna%20Wake%20Up%20%28Mashup-Remix%29.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=Eupg7rZ9AUY",
-        'description': "Drum and bass",
-        'by': "Wave-shapers",
-        'url': url_base + "Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28WAV35HAPERS%20Remix%29.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=KykFbfCMizo",
-        'description': "E.D.M.",
-        'by': "Riot", # R!OT
-        'url': url_base + "Rick%20Astley%20-%20Never%20Gonna%20Give%20You%20Up%20%28R%21OT%20Remix%29.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=GL-8XuoxuaQ",
-        'description': "Metal",
-        'by': "Andy Rehfeldt",
-        'url': url_base + "Rick%20Astley-Never%20Gonna%20Give%20You%20Up%28Metal%20Version%29.mp3",
-    },
-    {
-        'src': "https://www.youtube.com/watch?v=snC4ZtW9dHI",
-        'description': "Nirvana",
-        'by': "i. v. lad e. o", # ivladeo
-        'url': url_base + "Rick%20Astley%20%20%20Nirvana%20Mashup%20%20%20Never%20gonna%20give%20your%20teen%20spirit%20up.mp3",
-    },
-    _original
-]
 
 def play_tune(tune):
     """Takes a tune dictionary, returns a TwiML response that plays it."""
@@ -81,7 +28,7 @@ def play_tune(tune):
     # By calling functions on gather, digits can be pressed during the song
     # playback *and* the menu afterwards.
     gather = response.gather(numDigits=1, timeout=10)
-    gather.play(tune['url'])
+    gather.play(yaml_content['url_base'] + quote(tune['filename']))
     gather.say(generate_menu())
     
     # Our goodbye triggers after gather times out.
@@ -108,7 +55,7 @@ def original():
 
     # Without a selection, play the original
     if selection is None:
-        return str(play_tune(_original))
+        return str(play_tune(yaml_content['original']))
 
     # With a selection try to turn into an index we can use.
     # There may be a '#' or '*', so we'll default to '0'
@@ -124,7 +71,7 @@ def original():
 
     # Otherwise load the song they want, with a default of the original
     # song if they select something outsie our array bounds.
-    tune = _original
+    tune = yaml_content['original']
 
     try: tune = tunes[selection]
     except Exception: pass
@@ -139,10 +86,10 @@ def generate_menu():
         if song is None:
             continue
 
-        menu += "To listen to {}".format(song['description'])
+        menu += "To listen to {}".format(song['title'])
 
-        if 'by' in song:
-            menu += " by {}".format(song['by'])
+        if 'artist' in song:
+            menu += " by {}".format(song['artist'])
 
         menu += ", press {}.\n".format(idx)
 

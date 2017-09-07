@@ -1,0 +1,47 @@
+# Where we're storing all our audio files.
+url_base: "https://s3-us-west-2.amazonaws.com/true-commitment/"
+original:
+    title: "The Original"
+    artist: "Rick Astley"
+    filename: "01-NeverGonnaGiveYouUp.mp3"
+remixes:
+    eight_bit:
+        src: "https://www.youtube.com/watch?v=b1WWpKEPdT4"
+        title: "Eight bit"
+        artist: "Kita Khyber"
+        filename: "8-Bit Rick Roll.mp3"
+    dubstep:
+        src: "https://www.youtube.com/watch?v=q-9KqwCFDJs"
+        title: "Dubstep"
+        artist: "Crystalize"
+        filename: "Rick-Astley-Dubstep.mp3"
+    daft_punk:
+        # Not sure who this is by
+        src: "https://vimeo.com/64322245"
+        title: "Daft Punk"
+        filename: "Rick Roll Never Gonna Give You Up (Daft Punk remix).mp3"
+    avicii:
+        src: "https://www.youtube.com/watch?v=oT3mCybbhf0"
+        title: "Uh-vee-chee"  # Avicii, but Twilio gets confused by that.
+        artist: "Nils"
+        filename: "AVICII and RICK ASTLEY - Never Gonna Wake Up (Mashup-Remix).mp3"
+    drumnbass:
+        src: "https://www.youtube.com/watch?v=Eupg7rZ9AUY"
+        title: "Drum and bass"
+        artist: "Wave-shapers"
+        filename: "Rick Astley - Never Gonna Give You Up (WAV35HAPERS Remix).mp3"
+    riot:
+        src: "https://www.youtube.com/watch?v=KykFbfCMizo"
+        title: "E.D.M."
+        artist: "Riot"  # R!OT
+        filename: "Rick Astley - Never Gonna Give You Up (R!OT Remix).mp3"
+    metal:
+        src: "https://www.youtube.com/watch?v=GL-8XuoxuaQ"
+        title: "Metal"
+        artist: "Andy Rehfeldt"
+        filename: "Rick Astley-Never Gonna Give You Up(Metal Version).mp3"
+    nirvana:
+        src: "https://www.youtube.com/watch?v=snC4ZtW9dHI"
+        title: "Nirvana"
+        artist: "i. v. lad e. o"  # ivladeo
+        filename: "Rick Astley   Nirvana Mashup   Never gonna give your teen spirit up.mp3"

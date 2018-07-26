@@ -54,7 +54,7 @@ Record the URL it spits out, connect it as a webhook to your own phone number wi
 
 ## How much do you spend bringing joy to Rick Astley fans?
 
-As of the end of 2016, number and connection costs were averaging about $150 USD/yr. It's totally
+As of mid 2018, connection costs were averaging about $900 USD/yr. It's totally
 worth it for the joy it brings others.
 
 If you want to defray my hosting costs, there's always [bitcoin](https://blockchain.info/address/18pgvfqWGs2CvurmNvq58h499RRTPCh3mz) and [Patreon](https://www.patreon.com/_pjf).

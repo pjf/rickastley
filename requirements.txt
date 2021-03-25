@@ -1,7 +1,7 @@
 Flask==0.11.1
 Jinja2==2.8
 MarkupSafe==0.23
-PyYAML==3.12
+PyYAML==5.4
 Unidecode==0.04.19
 Werkzeug==0.11.11
 argparse==1.2.1

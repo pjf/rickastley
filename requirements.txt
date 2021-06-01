@@ -36,7 +36,7 @@ six==1.10.0
 tqdm==4.10.0
 troposphere==1.9.0
 twilio==5.6.0
-urllib3==1.19.1
+urllib3==1.26.5
 wheel==0.29.0
 wsgi-request-logger==0.4.6
 wsgiref==0.1.2

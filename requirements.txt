@@ -8,7 +8,7 @@ argparse==1.2.1
 base58==0.2.4
 boto3==1.4.1
 botocore==1.4.80
-certifi==2016.9.26
+certifi==2022.12.7
 cffi==1.9.1
 click==6.6
 cryptography==1.5.3
